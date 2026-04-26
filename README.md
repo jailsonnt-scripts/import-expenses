@@ -37,8 +37,18 @@ python -m import_expenses.cli --input input.csv --output output.csv --profile nu
 
 ```bash
 src/import_expenses/
-tests/
+tests/unit/
+tests/integration/
+tests/fixtures/
 docs/
+```
+
+## Tests
+
+```bash
+pytest
+pytest tests/unit
+pytest tests/integration
 ```
 
 ## Notes
