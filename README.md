@@ -27,10 +27,16 @@ This project focuses on:
 - No web interface
 - No real-time sync
 
+## Installation
+
+```bash
+pip install -r requirements.txt
+```
+
 ## Usage
 
 ```bash
-import-expenses --input inter-credit-card.csv --output minhas-financas.csv
+python -m import_expenses --input inter-credit-card.csv --output minhas-financas.csv
 ```
 
 ## Project Structure
@@ -53,32 +59,4 @@ pytest tests/integration
 
 ## Notes
 
-This project is built incrementally using AI-assisted development (Codex) with strict control over complexity and quality.
-
----
-
-# 🤖 AGENTS.md (para Codex — curto e direto)
-
-```md
-# Project: import-expenses
-
-## Goal
-Convert bank and credit card CSV files into a normalized CSV for Minhas Finanças.
-
-## Scope
-- Handle checking account and credit card transactions
-- Support multiple CSV formats via configuration
-
-## Rules
-- Use Python standard library when possible
-- Do not ignore invalid data silently
-- Keep functions small and testable
-- Prefer simple solutions over complex abstractions
-
-## Workflow
-- Implement one feature at a time
-- Always run tests before finishing a task
-- Do not refactor unrelated code
-
-## Commands
-- Run tests: pytest
+This project is built incrementally using AI-assisted development with strict control over complexity and quality.

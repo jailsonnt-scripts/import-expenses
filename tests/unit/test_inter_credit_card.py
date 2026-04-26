@@ -6,7 +6,7 @@ import pytest
 from import_expenses.inter_credit_card import parse_inter_credit_card_invoice
 
 
-def test_parse_inter_credit_card_invoice(tmp_path) -> None:
+def test_parse_inter_credit_card_invoice_with_utf8_headers(tmp_path) -> None:
     csv_path = tmp_path / "invoice.csv"
     csv_path.write_text(
         "\ufeffData,Lançamento,Categoria,Tipo,Valor\n"
@@ -28,6 +28,19 @@ def test_parse_inter_credit_card_invoice(tmp_path) -> None:
     assert transactions[1].amount == Decimal("1234.56")
     assert transactions[1].source_category == "ALIMENTACAO"
     assert transactions[1].source_transaction_type == "Compra à vista"
+
+
+def test_parse_inter_credit_card_invoice_accepts_legacy_mojibake_header(tmp_path) -> None:
+    csv_path = tmp_path / "invoice.csv"
+    csv_path.write_text(
+        "\ufeffData,LanÃ§amento,Categoria,Tipo,Valor\n"
+        '"25/04/2026","GNT*TEMU","VESTUARIO","Parcela 1/4","R$ 54,15"\n',
+        encoding="utf-8",
+    )
+
+    transactions = parse_inter_credit_card_invoice(csv_path)
+
+    assert transactions[0].description == "GNT*TEMU"
 
 
 def test_parse_inter_credit_card_invoice_rejects_unexpected_columns(tmp_path) -> None:

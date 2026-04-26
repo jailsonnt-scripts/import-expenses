@@ -15,18 +15,32 @@ class Transaction:
 
 
 EXPECTED_COLUMNS = ["Data", "Lançamento", "Categoria", "Tipo", "Valor"]
+HEADER_ALIASES = {
+    "LanÃ§amento": "Lançamento",
+}
 
 
 def parse_inter_credit_card_invoice(path: str | Path) -> list[Transaction]:
     with Path(path).open(encoding="utf-8-sig", newline="") as csv_file:
         reader = csv.DictReader(csv_file)
-        _validate_columns(reader.fieldnames)
-        return [_parse_row(row) for row in reader]
+        normalized_fieldnames = _normalize_fieldnames(reader.fieldnames)
+        _validate_columns(normalized_fieldnames)
+        return [_parse_row(_normalize_row(row)) for row in reader]
 
 
 def _validate_columns(fieldnames: list[str] | None) -> None:
     if fieldnames != EXPECTED_COLUMNS:
         raise ValueError(f"Invalid columns: expected {EXPECTED_COLUMNS}, got {fieldnames}")
+
+
+def _normalize_fieldnames(fieldnames: list[str] | None) -> list[str] | None:
+    if fieldnames is None:
+        return None
+    return [HEADER_ALIASES.get(fieldname, fieldname) for fieldname in fieldnames]
+
+
+def _normalize_row(row: dict[str, str]) -> dict[str, str]:
+    return {HEADER_ALIASES.get(key, key): value for key, value in row.items()}
 
 
 def _parse_row(row: dict[str, str]) -> Transaction:
