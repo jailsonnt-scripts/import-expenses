@@ -101,6 +101,11 @@ Body: bullet points describing relevant changes
 Push using the configured SSH remote.
 Do not force push unless explicitly requested.
 
+## Prompt Documentation Policy
+Update docs/prompts.md only for meaningful, reusable prompts
+Do not log trivial or repetitive prompts
+Focus on prompts that define structure, workflow, or strategy
+
 ## Implementation Priority
 
 Start with Inter credit card support
@@ -117,3 +122,14 @@ If the user says "push", "commit and push", or "save changes":
 → Execute the full commit and push workflow
 If the user says "implement X and push":
 → Implement X, run tests, then commit and push
+
+## Prompt Documentation Trigger
+When a change introduces:
+a new workflow
+a new architectural decision
+a new testing strategy
+a reusable pattern
+
+→ Update docs/prompts.md accordingly
+
+Do not update prompts.md for trivial or small changes
