@@ -122,6 +122,25 @@ Outcome:
 - Unit tests cover row formatting, defaults, and truncation
 - Integration tests cover parser-to-output success behavior
 
+## Step 8 - Pull Request Workflow
+
+Prompt:
+
+Update the project workflow so push and commit requests use pull requests.
+
+- Create a feature branch from the current base branch
+- Validate changes with `git status`, `git diff`, and `pytest`
+- Commit only passing changes with concise bullet-point messages
+- Push the feature branch using the configured SSH remote
+- Create a PR targeting the original branch
+- Do not merge or force push unless explicitly requested
+
+Outcome:
+
+- Future push-style requests should use a branch and PR workflow
+- PR bodies should summarize changes, tests, and notes or limitations
+- Direct pushes to the original branch are avoided for implementation work
+
 ## Notes
 
 Prompts are intentionally small to reduce token usage and improve code quality.
