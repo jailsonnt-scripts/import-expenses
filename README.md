@@ -30,7 +30,7 @@ This project focuses on:
 ## Usage
 
 ```bash
-python -m import_expenses.cli --input input.csv --output output.csv --profile nubank-card
+import-expenses --input inter-credit-card.csv --output minhas-financas.csv
 ```
 
 ## Project Structure

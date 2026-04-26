@@ -98,6 +98,30 @@ Outcome:
 - Prompt history records reusable project guidance instead of every small task
 - Future prompt updates have a clear trigger and format
 
+## Step 7 - Minhas Finanças Credit Card Output
+
+Prompt:
+
+Add output CSV generation for Minhas Finanças credit card import.
+
+- Use `docs/formats.md` as the source of truth
+- Implement output generation only for Inter credit card for now
+- Use the standard library `csv` module
+- Generate fields in the required Minhas Finanças order
+- Format amounts with dot decimal separator and dates as `DD/MM/YYYY`
+- Default category to `Outros` and keep subcategory empty
+- Limit descriptions to 35 characters
+- Preserve useful Inter metadata in notes
+- Do not implement AI category classification
+- Cover output formatting with unit tests and the fixture-to-output happy path with integration tests
+
+Outcome:
+
+- Inter credit card transactions can now be written as Minhas Finanças credit card CSV rows
+- The CLI turns an Inter invoice CSV into an output CSV file
+- Unit tests cover row formatting, defaults, and truncation
+- Integration tests cover parser-to-output success behavior
+
 ## Notes
 
 Prompts are intentionally small to reduce token usage and improve code quality.
