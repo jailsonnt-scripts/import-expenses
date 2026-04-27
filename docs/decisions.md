@@ -20,3 +20,16 @@ The project is built step-by-step using AI assistance to ensure:
 - correctness
 - simplicity
 - test coverage
+
+## Minhas Financas Credit Card Output
+
+Credit card output follows the Minhas Financas CSV import instructions directly:
+
+- no header row
+- source amount sign preserved for credit card expenses
+- `Outros` for category and subcategory
+- `Inter` for account and card fields
+- invoice due date supplied by `--due-date`
+- final transaction date/time field after notes, defaulting to `08:00` when source time is unavailable
+
+The CLI supports both `--output` for an exact file path and `--output-dir` for choosing only the destination directory.
