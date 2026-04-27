@@ -141,6 +141,31 @@ Outcome:
 - PR bodies should summarize changes, tests, and notes or limitations
 - Direct pushes to the original branch are avoided for implementation work
 
+## Step 9 - Minhas Financas Import Compatibility
+
+Prompt:
+
+Align the output CSV with the import instructions shown by Minhas Financas.
+
+- Do not write a header row
+- Use the exact import order: description, amount, due date, category, subcategory, account, card, notes, transaction date/time
+- Preserve the parsed source sign for credit card amounts
+- Fill category and subcategory with `Outros`
+- Fill account and card with `Inter`
+- Use the invoice due date as the output due date
+- Append transaction date/time with `08:00` when the source has no time
+- Allow users to choose either an exact output file or only an output directory
+- Keep Inter installments out of the output because the app cannot import them correctly
+- Keep Inter invoice payment rows out of the output because they are payments of previous invoices
+
+Outcome:
+
+- The writer now emits import-ready rows without headers
+- Inter credit card amounts preserve the parsed source sign
+- Inter credit card rows include the final transaction date/time column
+- The CLI accepts `--due-date` and `--output-dir`
+- Tests cover installment filtering, invoice payment filtering, amount formatting, headerless output, due date handling, output directory generation, and transaction date/time output
+
 ## Notes
 
 Prompts are intentionally small to reduce token usage and improve code quality.

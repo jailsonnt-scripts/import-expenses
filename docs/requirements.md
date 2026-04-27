@@ -5,31 +5,38 @@
 - Read CSV files from different banks
 - Support multiple input formats
 - Parse transactions into a common structure
-- Normalize:
-  - dates
-  - amounts
-  - transaction types
-- Generate a standardized CSV output
+- Normalize dates, amounts, and transaction types
+- Generate a standardized CSV output for Minhas Financas
 - Report invalid rows with line number and reason
 
 ## Data Handling
 
-- No row should be silently ignored
+- No invalid row should be silently ignored
 - Invalid data must be reported
-- Valid data must always be preserved
+- Valid data must be preserved unless an explicit business rule excludes it
+- Rows excluded by explicit business rules must be covered by tests
 
 ## Supported Sources (initial)
 
 - Inter (checking account)
 - Inter (credit card)
+- Nubank (credit card)
+
 Inter Credit Card Requirements:
 
-Read CSV exported from Inter credit card invoice
-Support columns: Data, Lançamento, Categoria, Tipo, Valor
-Parse Brazilian currency values such as R$ 54,15
-Preserve source category and transaction type for notes or future classification
-Generate output category as Outros in the initial version
-- Nubank (credit card)
+- Read CSV exported from Inter credit card invoice
+- Support columns: Data, Lancamento, Categoria, Tipo, Valor
+- Parse Brazilian currency values such as `R$ 54,15`
+- Preserve source category and transaction type for notes or future classification
+- Generate output category as `Outros` in the initial version
+- Omit installments whose Tipo matches `Parcela X/Y` because Minhas Financas cannot import them correctly
+- Omit invoice payments whose Lancamento is `PAGTO DEBITO AUTOMATICO`
+- Preserve the parsed source sign when generating credit card amounts
+- Generate output without a header row
+- Use the invoice due date as `Data Venc` when it is provided by CLI
+- Generate `Outros` for both category and subcategory
+- Generate `Inter` for both account and credit card fields
+- Append transaction date/time after notes, using `08:00` when the source has no time
 
 ## Non-functional
 
@@ -38,18 +45,19 @@ Generate output category as Outros in the initial version
 - No external dependencies unless necessary
 
 ## Future Enhancements
-AI-based category classification
-AI-based description enrichment
-Smarter account and credit card mapping
+
+- AI-based category classification
+- AI-based description enrichment
+- Smarter account and credit card mapping
 
 ## Implementation Order
 
-Inter credit card (invoice CSV)
-Inter checking account
-Nubank credit card
-Other sources
+1. Inter credit card invoice CSV
+2. Inter checking account
+3. Nubank credit card
+4. Other sources
 
 ## Priority
 
-Inter credit card is the first supported format
-All parsing, validation and normalization logic must be validated using this source before expanding to others
+Inter credit card is the first supported format.
+All parsing, validation, and normalization logic must be validated using this source before expanding to others.

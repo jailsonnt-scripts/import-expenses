@@ -3,6 +3,7 @@ from dataclasses import dataclass
 from datetime import date, datetime
 from decimal import Decimal
 from pathlib import Path
+import re
 
 
 @dataclass(frozen=True)
@@ -18,6 +19,8 @@ EXPECTED_COLUMNS = ["Data", "Lançamento", "Categoria", "Tipo", "Valor"]
 HEADER_ALIASES = {
     "LanÃ§amento": "Lançamento",
 }
+INSTALLMENT_TYPE_PATTERN = re.compile(r"Parcela \d+/\d+")
+INVOICE_PAYMENT_DESCRIPTIONS = {"PAGTO DEBITO AUTOMATICO"}
 
 
 def parse_inter_credit_card_invoice(path: str | Path) -> list[Transaction]:
@@ -25,7 +28,13 @@ def parse_inter_credit_card_invoice(path: str | Path) -> list[Transaction]:
         reader = csv.DictReader(csv_file)
         normalized_fieldnames = _normalize_fieldnames(reader.fieldnames)
         _validate_columns(normalized_fieldnames)
-        return [_parse_row(_normalize_row(row)) for row in reader]
+        transactions = []
+        for row in reader:
+            normalized_row = _normalize_row(row)
+            if _should_skip_row(normalized_row):
+                continue
+            transactions.append(_parse_row(normalized_row))
+        return transactions
 
 
 def _validate_columns(fieldnames: list[str] | None) -> None:
@@ -41,6 +50,18 @@ def _normalize_fieldnames(fieldnames: list[str] | None) -> list[str] | None:
 
 def _normalize_row(row: dict[str, str]) -> dict[str, str]:
     return {HEADER_ALIASES.get(key, key): value for key, value in row.items()}
+
+
+def _should_skip_row(row: dict[str, str]) -> bool:
+    return _is_installment(row["Tipo"]) or _is_invoice_payment(row[EXPECTED_COLUMNS[1]])
+
+
+def _is_installment(transaction_type: str) -> bool:
+    return INSTALLMENT_TYPE_PATTERN.fullmatch(transaction_type.strip()) is not None
+
+
+def _is_invoice_payment(description: str) -> bool:
+    return description.strip().upper() in INVOICE_PAYMENT_DESCRIPTIONS
 
 
 def _parse_row(row: dict[str, str]) -> Transaction:

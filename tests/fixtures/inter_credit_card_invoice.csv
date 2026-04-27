@@ -1,3 +1,4 @@
 "Data","Lançamento","Categoria","Tipo","Valor"
-"25/04/2026","GNT*TEMU","VESTUARIO","Parcela 1/4","R$ 54,15"
-"26/04/2026","MERCADO","ALIMENTACAO","Compra à vista","R$ 1.234,56"
+"25/04/2026","LOJA PARCELADA TESTE","COMPRAS","Parcela 1/4","R$ 54,15"
+"07/04/2026","PAGTO DEBITO AUTOMATICO","OUTROS","Compra à vista","-R$ 13.479,16"
+"26/04/2026","COMPRA TESTE MERCADO","SUPERMERCADO","Compra à vista","R$ 1.234,56"
