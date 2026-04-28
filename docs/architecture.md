@@ -4,4 +4,4 @@ The architecture is being developed incrementally using an AI-assisted workflow,
 
 ## Current Direction
 
-Input CSV → Parsing → Validation → Normalization → Output CSV
+Input CSV/OFX → Source detection → Parsing → Validation → Normalization → Output CSV

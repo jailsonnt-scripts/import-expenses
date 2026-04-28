@@ -166,6 +166,29 @@ Outcome:
 - The CLI accepts `--due-date` and `--output-dir`
 - Tests cover installment filtering, invoice payment filtering, amount formatting, headerless output, due date handling, output directory generation, and transaction date/time output
 
+## Step 10 - Inter Checking Account OFX Support
+
+Prompt:
+
+Add Inter checking account support using OFX input.
+
+- Parse Inter OFX statements with bank `077` and account type `CHECKING`
+- Preserve invalid data failures instead of silently skipping rows
+- Output Minhas Financas rows with an empty credit card field
+- Use OFX `DTPOSTED` as `Data Venc`
+- Use the effective import date as `Data Transacao`
+- Add CLI parameters and prompts for missing necessary input
+- Sanitize fixture data before adding tests
+- Update README and format documentation
+
+Outcome:
+
+- Inter checking account OFX files can be parsed and exported
+- The CLI supports `--source inter-checking` and infers `.ofx` inputs
+- Missing input path or unknown source extension triggers an interactive prompt
+- Unit tests cover OFX parsing, validation failures, output formatting, and CLI behavior
+- Integration tests cover fixture-to-output checking account flow
+
 ## Notes
 
 Prompts are intentionally small to reduce token usage and improve code quality.

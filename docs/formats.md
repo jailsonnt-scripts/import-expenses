@@ -30,6 +30,36 @@ Column mapping used by this project:
 - Observacoes: source metadata
 - Data Transacao: original transaction date and time
 
+## Output - Minhas Financas: Checking Account
+
+Separator: comma `,`
+
+Header: none. The first CSV line must be a transaction.
+
+Expected order:
+
+```csv
+Descricao,Valor,Data Venc,Categoria,Subcategoria,Conta,Cartao,Observacoes,Data Transacao
+```
+
+Example for Inter checking account:
+
+```csv
+Cliente Exemplo,54.15,25/04/2026,Outros,Outros,Inter,,Inter checking type: CREDIT; Fit ID: 202604250771; Transaction date: 25/04/2026,28/04/2026 08:00
+```
+
+Column mapping used by this project:
+
+- Descricao: truncated transaction description
+- Valor: normalized transaction amount with dot decimal separator
+- Data Venc: real-world execution or due date from OFX `DTPOSTED`
+- Categoria: `Outros`
+- Subcategoria: `Outros`
+- Conta: `Inter`
+- Cartao: empty
+- Observacoes: source metadata
+- Data Transacao: effective date when the transaction is created in Minhas Financas, from CLI `--transaction-date` or today's date
+
 ## Default Values
 
 - category must default to `Outros`
@@ -61,7 +91,48 @@ Column mapping used by this project:
 
 ### Inter (checking account)
 
-Not implemented yet.
+Input - Inter Checking Account Statement
+
+File characteristics:
+
+- Format: OFX/SGML
+- Bank ID: `077`
+- Account type: `CHECKING`
+- Decimal separator in input: dot
+- Amount sign is provided by OFX `TRNAMT`
+
+Required statement tags:
+
+- `BANKID`
+- `ACCTTYPE`
+- at least one `STMTTRN`
+
+Required transaction tags:
+
+- `TRNTYPE`
+- `DTPOSTED`
+- `TRNAMT`
+- `FITID`
+- `NAME` or `MEMO`
+
+Field mapping:
+
+- `DTPOSTED` -> transaction_date and output `Data Venc`
+- `NAME` -> description when present
+- `MEMO` -> description fallback and notes metadata
+- `TRNAMT` -> amount
+- `TRNTYPE` -> source_transaction_type
+- `FITID` -> source identifier in notes
+
+Parsing rules:
+
+- `BANKID` must be `077`.
+- `ACCTTYPE` must be `CHECKING`.
+- `DTPOSTED` must be parsed as `YYYYMMDD`; OFX datetime suffixes are ignored.
+- `TRNAMT` must parse as a decimal amount and preserve the source sign.
+- Missing required statement or transaction data must fail the import.
+- Output `Cartao` must be empty.
+- Output `Data Transacao` must use `--transaction-date` or today's date when omitted.
 
 ### Inter (credit card)
 

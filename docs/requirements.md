@@ -38,6 +38,21 @@ Inter Credit Card Requirements:
 - Generate `Inter` for both account and credit card fields
 - Append transaction date/time after notes, using `08:00` when the source has no time
 
+Inter Checking Account Requirements:
+
+- Read OFX exported from Inter checking account statements
+- Validate the OFX as Inter bank `077` and account type `CHECKING`
+- Parse transactions from `STMTTRN` entries
+- Parse `DTPOSTED` as the real-world transaction or due date
+- Parse `TRNAMT` as a decimal amount and preserve the source sign
+- Use `NAME` as description, falling back to `MEMO`
+- Preserve `TRNTYPE`, `FITID`, transaction date, and memo in notes
+- Generate output category and subcategory as `Outros`
+- Generate `Inter` for account and an empty credit card field
+- Generate `Data Venc` from `DTPOSTED`
+- Generate `Data Transacao` from CLI `--transaction-date`, defaulting to today's date
+- Prompt for missing CLI input values when they are necessary and cannot be inferred
+
 ## Non-functional
 
 - Simple and maintainable code
