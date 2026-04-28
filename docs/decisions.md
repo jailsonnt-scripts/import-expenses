@@ -33,3 +33,15 @@ Credit card output follows the Minhas Financas CSV import instructions directly:
 - final transaction date/time field after notes, defaulting to `08:00` when source time is unavailable
 
 The CLI supports both `--output` for an exact file path and `--output-dir` for choosing only the destination directory.
+
+## Inter Checking Account OFX Output
+
+Inter checking account imports use the OFX export because the bank statement is
+available as structured transaction data.
+
+- `DTPOSTED` becomes `Data Venc`
+- `TRNAMT` keeps the source sign
+- `NAME` is preferred for description, with `MEMO` as fallback
+- `Cartao` is empty because this is not a credit card transaction
+- `Data Transacao` comes from `--transaction-date` or today's date
+- `.ofx` input paths are inferred as `inter-checking`

@@ -4,6 +4,7 @@ from decimal import Decimal
 from pathlib import Path
 from typing import Iterable
 
+from import_expenses.inter_checking_account import CheckingTransaction
 from import_expenses.inter_credit_card import Transaction
 
 
@@ -39,6 +40,19 @@ def write_credit_card_import_csv(
         )
 
 
+def write_checking_account_import_csv(
+    transactions: Iterable[CheckingTransaction],
+    path: str | Path,
+    transaction_date: date,
+) -> None:
+    with Path(path).open("w", encoding="utf-8", newline="") as csv_file:
+        writer = csv.DictWriter(csv_file, fieldnames=OUTPUT_FIELDS)
+        writer.writerows(
+            format_checking_account_row(transaction, transaction_date)
+            for transaction in transactions
+        )
+
+
 def format_credit_card_row(
     transaction: Transaction,
     due_date: date | None = None,
@@ -54,6 +68,23 @@ def format_credit_card_row(
         "credit_card": DEFAULT_CREDIT_CARD,
         "notes": format_notes(transaction),
         "transaction_datetime": format_transaction_datetime(transaction),
+    }
+
+
+def format_checking_account_row(
+    transaction: CheckingTransaction,
+    effective_date: date,
+) -> dict[str, str]:
+    return {
+        "description": truncate_description(transaction.description),
+        "amount": format_amount(transaction.amount),
+        "due_date": transaction.transaction_date.strftime("%d/%m/%Y"),
+        "category": DEFAULT_CATEGORY,
+        "subcategory": DEFAULT_SUBCATEGORY,
+        "account": DEFAULT_ACCOUNT,
+        "credit_card": "",
+        "notes": format_checking_account_notes(transaction),
+        "transaction_datetime": format_effective_transaction_datetime(effective_date),
     }
 
 
@@ -74,5 +105,20 @@ def format_notes(transaction: Transaction) -> str:
     )
 
 
+def format_checking_account_notes(transaction: CheckingTransaction) -> str:
+    notes = (
+        f"Inter checking type: {transaction.source_transaction_type}; "
+        f"Fit ID: {transaction.fit_id}; "
+        f"Transaction date: {transaction.transaction_date.strftime('%d/%m/%Y')}"
+    )
+    if transaction.memo:
+        return f"{notes}; Memo: {transaction.memo}"
+    return notes
+
+
 def format_transaction_datetime(transaction: Transaction) -> str:
     return f"{transaction.transaction_date.strftime('%d/%m/%Y')} {DEFAULT_TRANSACTION_TIME}"
+
+
+def format_effective_transaction_datetime(effective_date: date) -> str:
+    return f"{effective_date.strftime('%d/%m/%Y')} {DEFAULT_TRANSACTION_TIME}"

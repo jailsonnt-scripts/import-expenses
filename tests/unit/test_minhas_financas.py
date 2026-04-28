@@ -2,11 +2,14 @@ import csv
 from datetime import date
 from decimal import Decimal
 
+from import_expenses.inter_checking_account import CheckingTransaction
 from import_expenses.inter_credit_card import Transaction
 from import_expenses.minhas_financas import (
+    format_checking_account_row,
     format_credit_card_row,
     format_transaction_datetime,
     truncate_description,
+    write_checking_account_import_csv,
     write_credit_card_import_csv,
 )
 
@@ -36,6 +39,35 @@ def test_format_credit_card_row() -> None:
             "Transaction date: 25/04/2026"
         ),
         "transaction_datetime": "25/04/2026 08:00",
+    }
+
+
+def test_format_checking_account_row() -> None:
+    transaction = CheckingTransaction(
+        transaction_date=date(2026, 4, 25),
+        description="Cliente Exemplo",
+        amount=Decimal("54.15"),
+        source_transaction_type="CREDIT",
+        fit_id="202604250771",
+        memo='Pix recebido: "Cp :00000000-CLIENTE EXEMPLO"',
+    )
+
+    row = format_checking_account_row(transaction, effective_date=date(2026, 4, 28))
+
+    assert row == {
+        "description": "Cliente Exemplo",
+        "amount": "54.15",
+        "due_date": "25/04/2026",
+        "category": "Outros",
+        "subcategory": "Outros",
+        "account": "Inter",
+        "credit_card": "",
+        "notes": (
+            "Inter checking type: CREDIT; Fit ID: 202604250771; "
+            "Transaction date: 25/04/2026; "
+            'Memo: Pix recebido: "Cp :00000000-CLIENTE EXEMPLO"'
+        ),
+        "transaction_datetime": "28/04/2026 08:00",
     }
 
 
@@ -131,5 +163,44 @@ def test_write_credit_card_import_csv(tmp_path) -> None:
                 "Transaction date: 25/04/2026"
             ),
             "25/04/2026 08:00",
+        ]
+    ]
+
+
+def test_write_checking_account_import_csv(tmp_path) -> None:
+    output_path = tmp_path / "minhas-financas.csv"
+    transaction = CheckingTransaction(
+        transaction_date=date(2026, 4, 21),
+        description="Loja Teste",
+        amount=Decimal("-1.00"),
+        source_transaction_type="PAYMENT",
+        fit_id="202604210771",
+        memo='Pix enviado: "Cp :11111111-LOJA TESTE"',
+    )
+
+    write_checking_account_import_csv(
+        [transaction],
+        output_path,
+        transaction_date=date(2026, 4, 28),
+    )
+
+    with output_path.open(encoding="utf-8", newline="") as csv_file:
+        rows = list(csv.reader(csv_file))
+
+    assert rows == [
+        [
+            "Loja Teste",
+            "-1.00",
+            "21/04/2026",
+            "Outros",
+            "Outros",
+            "Inter",
+            "",
+            (
+                "Inter checking type: PAYMENT; Fit ID: 202604210771; "
+                "Transaction date: 21/04/2026; "
+                'Memo: Pix enviado: "Cp :11111111-LOJA TESTE"'
+            ),
+            "28/04/2026 08:00",
         ]
     ]
